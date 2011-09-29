@@ -45,7 +45,8 @@
 ;; 
 ;; To get TAB-completion:
 ;;
-;; (add-hook 'erc-mode-hook #'pcomplete-bitlbee-setup)
+;; (autoload 'pcomplete-bitlbee-setup "bitlbee")
+;; (add-hook 'erc-mode-hook 'pcomplete-bitlbee-setup)
 ;;
 ;;
 ;; Original version by Peter Jones:
