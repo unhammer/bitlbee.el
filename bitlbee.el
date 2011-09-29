@@ -64,6 +64,16 @@
 (defvar bitlbee-buffer-name "*bitlbee*"
   "The name of the bitlbee process buffer")
 
+(defvar bitlbee-pre-start-hook nil
+  "Hook run before starting bitlbee.
+
+See also `bitlbee-post-start-hook'.")
+
+(defvar bitlbee-pre-post-hook nil
+  "Hook run after starting bitlbee.
+
+See also `bitlbee-pre-start-hook'.")
+
 (defun bitlbee-running-p ()
   "Returns non-nil if bitlbee is running"
   (if (get-buffer-process bitlbee-buffer-name) t nil))
@@ -71,11 +81,13 @@
 (defun bitlbee-start ()
   "Start the bitlbee server"
   (interactive)
+  (run-hooks 'bitlbee-pre-start-hook)
   (if (bitlbee-running-p) (message "bitlbee is already running")
     (make-directory (expand-file-name bitlbee-user-directory) t)
     (let ((proc (start-process-shell-command "bitlbee" bitlbee-buffer-name bitlbee-executable (bitlbee-command-line))))
       (set-process-sentinel proc 'bitlbee-sentinel-proc))
-      (message "started bitlbee")))
+      (message "started bitlbee"))
+  (run-hooks 'bitlbee-post-start-hook))
 
 (defun bitlbee-stop ()
   "Stop the bitlbee server"
@@ -170,7 +182,8 @@
 
 (defun pcomplete-bitlbee-setup ()
   "Add to erc-mode-hook to get some completion, runs if buffer is
-named &bitlbee."
+named &bitlbee (ie. not the process buffer, but the main
+interaction buffer)."
   (when (equal (buffer-name) "&bitlbee")
     (setq pcomplete-command-completion-function 'pcomplete/erc-mode/complete-command-bitlbee
 	  pcomplete-command-name-function 'pcomplete-erc-command-name-bitlbee)))
